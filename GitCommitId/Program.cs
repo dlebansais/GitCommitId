@@ -34,10 +34,10 @@ namespace GitCommitId
         {
             if (args.Length < 1)
             {
-                Output($"Usage: {Path.GetFileNameWithoutExtension(Environment.CommandLine)} <.exe or .dll> [-u | -c] [-q]");
+                Output($"Usage: {Path.GetFileNameWithoutExtension(Environment.CommandLine)} <.exe or .dll> [-u | -r | -c] [-q]");
                 Output("No option: read the Commit Id in the file.");
                 Output("-u: update the file Commit Id with the current Id, but does nothing if no change.");
-                Output("-r: replace the file Commit Id with the current Id, and insert it if necessary.");
+                Output("-r: replace the file Commit Id with the current Id even if no change, and insert it if necessary.");
                 Output("-c: clear the Commit Id in the file.");
                 Output("-q: quiet.");
                 return ToReturnCode(Errors.MissingArgument);

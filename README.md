@@ -4,14 +4,14 @@ Update an assembly (.exe or .dll) with the Git Commit Id it was compiled from.
 
 ## Purpose
 
-An assembly compiled from source code in a Git repository can be tagged with the commit identifier that correspond to the specific version used. This helps finding the original source code when only the final binary is available.
+An assembly compiled with source code from a Git repository can be tagged with the commit identifier that corresponds to the specific version used. This helps finding the original source code when only the final binary is available.
 
 ## Usage
 
-    GitCommitId.exe <.exe or .dll> [-u | -c] [-q]
+    GitCommitId.exe <.exe or .dll> [-u | -r | -c] [-q]
     No option: read the Commit Id in the file.
     -u: update the file Commit Id with the current Id, but does nothing if no change.
-    -r: replace the file Commit Id with the current Id, and insert it if necessary.
+    -r: replace the file Commit Id with the current Id even if no change, and insert it if necessary.
     -c: clear the Commit Id in the file.
     -q: quiet.
 
