@@ -10,7 +10,8 @@ An assembly compiled from source code in a Git repository can be tagged with the
 
     GitCommitId.exe <.exe or .dll> [-u | -c] [-q]
     No option: read the Commit Id in the file.
-    -u: update the file Commit Id with the current Id.
+    -u: update the file Commit Id with the current Id, but does nothing if no change.
+    -r: replace the file Commit Id with the current Id, and insert it if necessary.
     -c: clear the Commit Id in the file.
     -q: quiet.
 

@@ -26,6 +26,7 @@ namespace GitCommitId
     {
         private static readonly string CommitIdString = "CommitId";
         private static bool IsUpdate = false;
+        private static bool IsReplace = false;
         private static bool IsClear = false;
         private static bool IsQuiet = false;
 
@@ -35,7 +36,8 @@ namespace GitCommitId
             {
                 Output($"Usage: {Path.GetFileNameWithoutExtension(Environment.CommandLine)} <.exe or .dll> [-u | -c] [-q]");
                 Output("No option: read the Commit Id in the file.");
-                Output("-u: update the file Commit Id with the current Id.");
+                Output("-u: update the file Commit Id with the current Id, but does nothing if no change.");
+                Output("-r: replace the file Commit Id with the current Id, and insert it if necessary.");
                 Output("-c: clear the Commit Id in the file.");
                 Output("-q: quiet.");
                 return ToReturnCode(Errors.MissingArgument);
@@ -47,6 +49,8 @@ namespace GitCommitId
 
                 if (Option == "-u")
                     IsUpdate = true;
+                else if (Option == "-r")
+                    IsReplace = true;
                 else if (Option == "-c")
                     IsClear = true;
                 else if (Option == "-q")
@@ -66,8 +70,8 @@ namespace GitCommitId
                 return ToReturnCode(Errors.InvalidSourceFile);
             }
 
-            if (IsUpdate)
-                return UpdateCommitId(FileName);
+            if (IsUpdate || IsReplace)
+                return UpdateCommitId(FileName, IsReplace);
             else if (IsClear)
                 return ClearCommitId(FileName);
             else
@@ -80,11 +84,11 @@ namespace GitCommitId
             {
                 VersionResource versionResource = new VersionResource();
                 versionResource.LoadFrom(fileName);
-                StringFileInfo stringFileInfo = (StringFileInfo)versionResource["StringFileInfo"];
+                StringFileInfo StringFileInfo = (StringFileInfo)versionResource["StringFileInfo"];
 
                 try
                 {
-                    string CommitId = stringFileInfo[CommitIdString];
+                    string CommitId = StringFileInfo[CommitIdString];
 
                     Output($"Current Id: {CommitId}");
                     return ToReturnCode(Errors.Success);
@@ -102,7 +106,7 @@ namespace GitCommitId
             }
         }
 
-        private static int UpdateCommitId(string fileName)
+        private static int UpdateCommitId(string fileName, bool forceReplace)
         {
             int Result;
 
@@ -115,10 +119,24 @@ namespace GitCommitId
                 VersionResource.LoadFrom(fileName);
                 StringFileInfo StringFileInfo = (StringFileInfo)VersionResource["StringFileInfo"];
 
-                StringFileInfo[CommitIdString] = CommitId;
-                VersionResource.SaveTo(fileName);
+                string FileCommitId;
+                try
+                {
+                    FileCommitId = StringFileInfo[CommitIdString];
+                }
+                catch
+                {
+                    FileCommitId = null;
+                }
 
-                Output($"Id updated to: {CommitId}");
+                if (forceReplace || FileCommitId == null || FileCommitId != CommitId)
+                {
+                    StringFileInfo[CommitIdString] = CommitId;
+                    VersionResource.SaveTo(fileName);
+
+                    Output($"Id updated to: {CommitId}");
+                }
+
                 return ToReturnCode(Errors.Success);
             }
             catch (Exception e)
