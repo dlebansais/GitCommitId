@@ -44,3 +44,5 @@ Git information come from searching for Git files, starting where the target ass
     GitCommitId myfile.exe
     File doesn't contain Git info.
   
+# Certification
+This program is digitally signed with a [CAcert](https://www.cacert.org/) certificate.
