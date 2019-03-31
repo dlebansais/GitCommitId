@@ -221,9 +221,9 @@ namespace GitCommitId
                             }
                         }
 
-                        Output("Invalid Git repository.");
-                        repositoryAddress = null;
-                        return ToReturnCode(Errors.InvalidGitRepository);
+                        Output("Warning: using localhost repository.");
+                        repositoryAddress = "localhost";
+                        return ToReturnCode(Errors.Success);
                     }
                     catch (Exception e)
                     {
@@ -277,7 +277,7 @@ namespace GitCommitId
                             }
                         }
 
-                        Output("Invalid Git repository.");
+                        Output("Invalid Git repository. No ref.");
                         commitId = null;
                         return ToReturnCode(Errors.InvalidGitRepository);
                     }
