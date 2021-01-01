@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Text;
-using Vestris.ResourceLib;
-
-namespace GitCommitId
+﻿namespace GitCommitId
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Text;
+    using Vestris.ResourceLib;
+
     public enum Errors
     {
         Success = 0,
@@ -118,7 +118,7 @@ namespace GitCommitId
         private static int UpdateFileCommitId(string fileName, bool forceReplace)
         {
             int Result;
-           
+
             if ((Result = GetCommitInfo(fileName, out string RepositoryAddress, out string CommitId)) < 0)
                 return Result;
 
@@ -137,12 +137,12 @@ namespace GitCommitId
                 }
                 catch
                 {
-                    FileRepositoryAddress = null;
-                    FileCommitId = null;
+                    FileRepositoryAddress = string.Empty;
+                    FileCommitId = string.Empty;
                 }
 
                 bool IsRepositoryAddressUpdated;
-                if (forceReplace || FileRepositoryAddress == null || FileRepositoryAddress != RepositoryAddress)
+                if (forceReplace || FileRepositoryAddress.Length == 0 || FileRepositoryAddress != RepositoryAddress)
                 {
                     WriteResourceString(StringFileInfo, RepositoryAddressString, RepositoryAddress);
                     Output($"Repo updated to: {RepositoryAddress}");
@@ -152,7 +152,7 @@ namespace GitCommitId
                     IsRepositoryAddressUpdated = false;
 
                 bool IsCommitIdUpdated;
-                if (forceReplace || FileCommitId == null || FileCommitId != CommitId)
+                if (forceReplace || FileCommitId.Length == 0 || FileCommitId != CommitId)
                 {
                     WriteResourceString(StringFileInfo, CommitIdString, CommitId);
                     Output($"Id updated to: {CommitId}");
@@ -176,13 +176,13 @@ namespace GitCommitId
 
         private static int GetCommitInfo(string fileName, out string repositoryAddress, out string commitId)
         {
-            string Folder = UseWorkingDirectory ? Environment.CurrentDirectory : Path.GetDirectoryName(fileName);
+            string Folder = UseWorkingDirectory ? Environment.CurrentDirectory : Path.GetDirectoryName(fileName)!;
 
             int Result;
 
             if ((Result = GetRepositoryAddress(Folder, out repositoryAddress)) < 0)
             {
-                commitId = null;
+                commitId = string.Empty;
                 return Result;
             }
 
@@ -205,9 +205,9 @@ namespace GitCommitId
                         {
                             using (StreamReader sr = new StreamReader(fs, Encoding.ASCII))
                             {
-                                for (; ; )
+                                for (; ;)
                                 {
-                                    string Line = sr.ReadLine();
+                                    string? Line = sr.ReadLine();
                                     if (Line == null)
                                         break;
 
@@ -228,16 +228,16 @@ namespace GitCommitId
                     catch (Exception e)
                     {
                         Output(e.Message);
-                        repositoryAddress = null;
+                        repositoryAddress = string.Empty;
                         return ToReturnCode(Errors.ExceptionReadingGit);
                     }
                 }
                 else
-                    folder = Path.GetDirectoryName(folder);
+                    folder = Path.GetDirectoryName(folder)!;
             }
 
             Output("File not in a subdirectory of a Git repository.");
-            repositoryAddress = null;
+            repositoryAddress = string.Empty;
             return ToReturnCode(Errors.NotInGitRepository);
         }
 
@@ -250,18 +250,18 @@ namespace GitCommitId
                 {
                     try
                     {
-                        string Head = null;
+                        string Head = string.Empty;
                         using (FileStream fs = new FileStream(GitPath, FileMode.Open, FileAccess.Read, FileShare.Read))
                         {
                             using (StreamReader sr = new StreamReader(fs, Encoding.ASCII))
                             {
-                                string Spec = sr.ReadLine();
-                                if (Spec.StartsWith("ref: "))
+                                string? Spec = sr.ReadLine();
+                                if (Spec != null && Spec.StartsWith("ref: "))
                                     Head = Spec.Substring(5);
                             }
                         }
 
-                        if (Head != null)
+                        if (Head.Length > 0)
                         {
                             GitPath = Path.Combine(folder, $".git/{Head}");
                             if (File.Exists(GitPath))
@@ -270,7 +270,7 @@ namespace GitCommitId
                                 {
                                     using (StreamReader sr = new StreamReader(fs, Encoding.ASCII))
                                     {
-                                        commitId = sr.ReadLine();
+                                        commitId = sr.ReadLine()!;
                                         return ToReturnCode(Errors.Success);
                                     }
                                 }
@@ -278,22 +278,22 @@ namespace GitCommitId
                         }
 
                         Output("Invalid Git repository. No ref.");
-                        commitId = null;
+                        commitId = string.Empty;
                         return ToReturnCode(Errors.InvalidGitRepository);
                     }
                     catch (Exception e)
                     {
                         Output(e.Message);
-                        commitId = null;
+                        commitId = string.Empty;
                         return ToReturnCode(Errors.ExceptionReadingGit);
                     }
                 }
                 else
-                    folder = Path.GetDirectoryName(folder);
+                    folder = Path.GetDirectoryName(folder)!;
             }
 
             Output("File not in a subdirectory of a Git repository.");
-            commitId = null;
+            commitId = string.Empty;
             return ToReturnCode(Errors.NotInGitRepository);
         }
 
@@ -345,12 +345,17 @@ namespace GitCommitId
 
         private static string ReadResourceString(StringFileInfo stringFileInfo, string key)
         {
-            string Result = stringFileInfo[key];
+            string? Result = stringFileInfo[key];
 
-            if (Result != null && Result.Length > 0 && Result[Result.Length - 1] == '\0')
-                Result = Result.Substring(0, Result.Length - 1);
+            if (Result != null)
+            {
+                if (Result.Length > 0 && Result[Result.Length - 1] == '\0')
+                    Result = Result.Substring(0, Result.Length - 1);
 
-            return Result;
+                return Result;
+            }
+            else
+                return string.Empty;
         }
 
         private static void WriteResourceString(StringFileInfo stringFileInfo, string key, string value)
@@ -362,7 +367,7 @@ namespace GitCommitId
         {
 #if DEBUG
             Debug.WriteLine(message);
-            Debug.WriteLine("");
+            Debug.WriteLine(string.Empty);
 #endif
 
             if (IsQuiet)

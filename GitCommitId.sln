@@ -1,9 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2041
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitCommitId", "GitCommitId\GitCommitId.csproj", "{2C88CE6C-B38C-411E-81A7-DDE6E0691DCA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitCommitId", "GitCommitId\GitCommitId.csproj", "{2C88CE6C-B38C-411E-81A7-DDE6E0691DCA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{174A2BB4-2400-4E01-84F5-6504F5C97A42} = {174A2BB4-2400-4E01-84F5-6504F5C97A42}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AFE5BC14-E3CB-4564-9DA6-AE8CB5879DB9}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PreBuild", "PreBuild\PreBuild.csproj", "{174A2BB4-2400-4E01-84F5-6504F5C97A42}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +25,10 @@ Global
 		{2C88CE6C-B38C-411E-81A7-DDE6E0691DCA}.Debug|x64.Build.0 = Debug|x64
 		{2C88CE6C-B38C-411E-81A7-DDE6E0691DCA}.Release|x64.ActiveCfg = Release|x64
 		{2C88CE6C-B38C-411E-81A7-DDE6E0691DCA}.Release|x64.Build.0 = Release|x64
+		{174A2BB4-2400-4E01-84F5-6504F5C97A42}.Debug|x64.ActiveCfg = Debug|x64
+		{174A2BB4-2400-4E01-84F5-6504F5C97A42}.Debug|x64.Build.0 = Debug|x64
+		{174A2BB4-2400-4E01-84F5-6504F5C97A42}.Release|x64.ActiveCfg = Release|x64
+		{174A2BB4-2400-4E01-84F5-6504F5C97A42}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
