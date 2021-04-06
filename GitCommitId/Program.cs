@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.IO;
     using System.Text;
     using Vestris.ResourceLib;
@@ -32,9 +31,7 @@
         {
             try
             {
-                VersionResource versionResource = new VersionResource();
-                versionResource.LoadFrom(fileName);
-                StringFileInfo StringFileInfo = (StringFileInfo)versionResource["StringFileInfo"];
+                LoadStringFileInfo(fileName, out VersionResource VersionResource, out StringFileInfo StringFileInfo);
 
                 try
                 {
@@ -67,9 +64,7 @@
 
             try
             {
-                VersionResource VersionResource = new VersionResource();
-                VersionResource.LoadFrom(fileName);
-                StringFileInfo StringFileInfo = (StringFileInfo)VersionResource["StringFileInfo"];
+                LoadStringFileInfo(fileName, out VersionResource VersionResource, out StringFileInfo StringFileInfo);
 
                 string FileRepositoryAddress;
                 string FileCommitId;
@@ -106,7 +101,7 @@
                     IsCommitIdUpdated = false;
 
                 if (IsRepositoryAddressUpdated || IsCommitIdUpdated)
-                    VersionResource.SaveTo(fileName);
+                    SaveVersionResource(fileName, VersionResource);
 
                 return ToReturnCode(Errors.Success);
             }
@@ -144,23 +139,20 @@
                 {
                     try
                     {
-                        using (FileStream fs = new FileStream(GitPath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                        {
-                            using (StreamReader sr = new StreamReader(fs, Encoding.ASCII))
-                            {
-                                for (; ;)
-                                {
-                                    string? Line = sr.ReadLine();
-                                    if (Line == null)
-                                        break;
+                        using FileStream GitPathStream = new FileStream(GitPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                        using StreamReader GitPathReader = new StreamReader(GitPathStream, Encoding.ASCII);
 
-                                    Line = Line.Trim();
-                                    if (Line.StartsWith("url = "))
-                                    {
-                                        repositoryAddress = Line.Substring(6);
-                                        return ToReturnCode(Errors.Success);
-                                    }
-                                }
+                        for (; ;)
+                        {
+                            string? Line = GitPathReader.ReadLine();
+                            if (Line == null)
+                                break;
+
+                            Line = Line.Trim();
+                            if (Line.StartsWith("url = "))
+                            {
+                                repositoryAddress = Line.Substring(6);
+                                return ToReturnCode(Errors.Success);
                             }
                         }
 
@@ -194,36 +186,30 @@
                     try
                     {
                         commitId = string.Empty;
-
                         string Head = string.Empty;
-                        using (FileStream fs = new FileStream(GitPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+
+                        using FileStream GitPathStream = new FileStream(GitPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                        using StreamReader GitPathReader = new StreamReader(GitPathStream, Encoding.ASCII);
+
+                        string? Spec = GitPathReader.ReadLine();
+                        if (Spec != null)
                         {
-                            using (StreamReader sr = new StreamReader(fs, Encoding.ASCII))
-                            {
-                                string? Spec = sr.ReadLine();
-                                if (Spec != null)
-                                {
-                                    if (Spec.StartsWith("ref: "))
-                                        Head = Spec.Substring(5);
-                                    else if (Spec.Length == 40)
-                                        commitId = Spec;
-                                }
-                            }
+                            if (Spec.StartsWith("ref: "))
+                                Head = Spec.Substring(5);
+                            else if (Spec.Length == 40)
+                                commitId = Spec;
                         }
 
                         if (Head.Length > 0)
                         {
-                            GitPath = Path.Combine(folder, $".git/{Head}");
-                            if (File.Exists(GitPath))
+                            string RefPath = Path.Combine(folder, $".git/{Head}");
+                            if (File.Exists(RefPath))
                             {
-                                using (FileStream fs = new FileStream(GitPath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                                {
-                                    using (StreamReader sr = new StreamReader(fs, Encoding.ASCII))
-                                    {
-                                        commitId = sr.ReadLine()!;
-                                        return ToReturnCode(Errors.Success);
-                                    }
-                                }
+                                using FileStream RefPathStream = new FileStream(RefPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                                using StreamReader RefPathReader = new StreamReader(RefPathStream, Encoding.ASCII);
+
+                                commitId = RefPathReader.ReadLine()!;
+                                return ToReturnCode(Errors.Success);
                             }
                         }
 
@@ -253,9 +239,7 @@
         {
             try
             {
-                VersionResource VersionResource = new VersionResource();
-                VersionResource.LoadFrom(fileName);
-                StringFileInfo StringFileInfo = (StringFileInfo)VersionResource["StringFileInfo"];
+                LoadStringFileInfo(fileName, out VersionResource VersionResource, out StringFileInfo StringFileInfo);
 
                 bool IsRepositoryAddressRemoved = false;
                 foreach (KeyValuePair<string, StringTable> StringEntry in StringFileInfo.Strings)
@@ -281,7 +265,7 @@
 
                 if (IsRepositoryAddressRemoved || IsCommitIdRemoved)
                 {
-                    VersionResource.SaveTo(fileName);
+                    SaveVersionResource(fileName, VersionResource);
                     return ToReturnCode(Errors.Success);
                 }
 
@@ -293,26 +277,6 @@
                 Output(e.Message, isError: true);
                 return ToReturnCode(Errors.ExceptionClearingFile);
             }
-        }
-
-        private string ReadResourceString(StringFileInfo stringFileInfo, string key)
-        {
-            string? Result = stringFileInfo[key];
-
-            if (Result != null)
-            {
-                if (Result.Length > 0 && Result[Result.Length - 1] == '\0')
-                    Result = Result.Substring(0, Result.Length - 1);
-
-                return Result;
-            }
-            else
-                return string.Empty;
-        }
-
-        private void WriteResourceString(StringFileInfo stringFileInfo, string key, string value)
-        {
-            stringFileInfo[key] = value;
         }
 
         private void Output(string message, bool isError = false)
