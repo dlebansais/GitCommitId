@@ -7,73 +7,16 @@
     using System.Text;
     using Vestris.ResourceLib;
 
-    public enum Errors
+    public partial class Program
     {
-        Success = 0,
-        MissingArgument,
-        InvalidSourceFile,
-        UnknownOption,
-        NoCommitId,
-        ExceptionReadingFile,
-        ExceptionWritingFile,
-        InvalidGitRepository,
-        ExceptionReadingGit,
-        NotInGitRepository,
-        ExceptionClearingFile,
-    }
+        private const string RepositoryAddressString = "RepositoryAddress";
+        private const string CommitIdString = "CommitId";
 
-    public class Program
-    {
-        private static readonly string RepositoryAddressString = "RepositoryAddress";
-        private static readonly string CommitIdString = "CommitId";
-        private static bool IsUpdate = false;
-        private static bool IsReplace = false;
-        private static bool IsClear = false;
-        private static bool UseWorkingDirectory = false;
-        private static bool IsQuiet = false;
-
-        private static int Main(string[] args)
+        private int ExecuteProgram()
         {
-            if (args.Length < 1)
-            {
-                string[] CommandLineArgs = Environment.GetCommandLineArgs();
-                string ProgramName = CommandLineArgs.Length > 0 ? Path.GetFileNameWithoutExtension(CommandLineArgs[0]) : "program";
-                Console.WriteLine($"Usage: {ProgramName} <.exe or .dll> [-u | -r | -c] [-w] [-q]");
-                Console.WriteLine("No option: read the Commit Id in the file.");
-                Console.WriteLine("-u: update the file Commit Id with the current Id, except if no change.");
-                Console.WriteLine("-r: replace the file Commit Id with the current Id even if no change, and insert it if necessary.");
-                Console.WriteLine("-c: clear the Commit Id in the file.");
-                Console.WriteLine("-w: search Git in the working directory.");
-                Console.WriteLine("-q: quiet.");
-                return ToReturnCode(Errors.MissingArgument);
-            }
-
-            for (int i = 1; i < args.Length; i++)
-            {
-                string Option = args[i];
-
-                if (Option == "-u")
-                    IsUpdate = true;
-                else if (Option == "-r")
-                    IsReplace = true;
-                else if (Option == "-c")
-                    IsClear = true;
-                else if (Option == "-w")
-                    UseWorkingDirectory = true;
-                else if (Option == "-q")
-                    IsQuiet = true;
-                else
-                {
-                    Output($"Unknown option {args[1]}.");
-                    return ToReturnCode(Errors.UnknownOption);
-                }
-            }
-
-            string FileName = args[0];
-
             if (!File.Exists(FileName))
             {
-                Output($"Invalid file {FileName}.");
+                Output($"Invalid file name.");
                 return ToReturnCode(Errors.InvalidSourceFile);
             }
 
@@ -85,7 +28,7 @@
                 return ReadFileCommitId(FileName);
         }
 
-        private static int ReadFileCommitId(string fileName)
+        private int ReadFileCommitId(string fileName)
         {
             try
             {
@@ -115,7 +58,7 @@
             }
         }
 
-        private static int UpdateFileCommitId(string fileName, bool forceReplace)
+        private int UpdateFileCommitId(string fileName, bool forceReplace)
         {
             int Result;
 
@@ -174,7 +117,7 @@
             }
         }
 
-        private static int GetCommitInfo(string fileName, out string repositoryAddress, out string commitId)
+        private int GetCommitInfo(string fileName, out string repositoryAddress, out string commitId)
         {
             string Folder = UseWorkingDirectory ? Environment.CurrentDirectory : Path.GetDirectoryName(fileName)!;
 
@@ -192,7 +135,7 @@
             return ToReturnCode(Errors.Success);
         }
 
-        private static int GetRepositoryAddress(string folder, out string repositoryAddress)
+        private int GetRepositoryAddress(string folder, out string repositoryAddress)
         {
             while (folder != null)
             {
@@ -241,7 +184,7 @@
             return ToReturnCode(Errors.NotInGitRepository);
         }
 
-        private static int GetCommitId(string folder, out string commitId)
+        private int GetCommitId(string folder, out string commitId)
         {
             while (folder != null)
             {
@@ -297,7 +240,7 @@
             return ToReturnCode(Errors.NotInGitRepository);
         }
 
-        private static int ClearFileCommitId(string fileName)
+        private int ClearFileCommitId(string fileName)
         {
             try
             {
@@ -343,7 +286,7 @@
             }
         }
 
-        private static string ReadResourceString(StringFileInfo stringFileInfo, string key)
+        private string ReadResourceString(StringFileInfo stringFileInfo, string key)
         {
             string? Result = stringFileInfo[key];
 
@@ -358,22 +301,17 @@
                 return string.Empty;
         }
 
-        private static void WriteResourceString(StringFileInfo stringFileInfo, string key, string value)
+        private void WriteResourceString(StringFileInfo stringFileInfo, string key, string value)
         {
             stringFileInfo[key] = value;
         }
 
-        private static void Output(string message)
+        private void Output(string message)
         {
-#if DEBUG
-            Debug.WriteLine(message);
-            Debug.WriteLine(string.Empty);
-#endif
-
             if (IsQuiet)
                 return;
 
-            Console.WriteLine(message);
+            ConsoleDebug.Write(message);
         }
 
         private static int ToReturnCode(Errors error)
