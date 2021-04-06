@@ -16,7 +16,7 @@
         {
             if (!File.Exists(FileName))
             {
-                Output($"Invalid file name.");
+                Output($"Invalid file name.", isError: true);
                 return ToReturnCode(Errors.InvalidSourceFile);
             }
 
@@ -47,13 +47,13 @@
                 }
                 catch
                 {
-                    Output("File doesn't contain Git info.");
+                    Output("File doesn't contain Git info.", isError: true);
                     return ToReturnCode(Errors.NoCommitId);
                 }
             }
             catch (Exception e)
             {
-                Output(e.Message);
+                Output(e.Message, isError: true);
                 return ToReturnCode(Errors.ExceptionReadingFile);
             }
         }
@@ -112,7 +112,7 @@
             }
             catch (Exception e)
             {
-                Output(e.Message);
+                Output(e.Message, isError: true);
                 return ToReturnCode(Errors.ExceptionWritingFile);
             }
         }
@@ -170,7 +170,7 @@
                     }
                     catch (Exception e)
                     {
-                        Output(e.Message);
+                        Output(e.Message, isError: true);
                         repositoryAddress = string.Empty;
                         return ToReturnCode(Errors.ExceptionReadingGit);
                     }
@@ -179,7 +179,7 @@
                     folder = Path.GetDirectoryName(folder)!;
             }
 
-            Output("File not in a subdirectory of a Git repository.");
+            Output("File not in a subdirectory of a Git repository.", isError: true);
             repositoryAddress = string.Empty;
             return ToReturnCode(Errors.NotInGitRepository);
         }
@@ -193,14 +193,21 @@
                 {
                     try
                     {
+                        commitId = string.Empty;
+
                         string Head = string.Empty;
                         using (FileStream fs = new FileStream(GitPath, FileMode.Open, FileAccess.Read, FileShare.Read))
                         {
                             using (StreamReader sr = new StreamReader(fs, Encoding.ASCII))
                             {
                                 string? Spec = sr.ReadLine();
-                                if (Spec != null && Spec.StartsWith("ref: "))
-                                    Head = Spec.Substring(5);
+                                if (Spec != null)
+                                {
+                                    if (Spec.StartsWith("ref: "))
+                                        Head = Spec.Substring(5);
+                                    else if (Spec.Length == 40)
+                                        commitId = Spec;
+                                }
                             }
                         }
 
@@ -220,13 +227,15 @@
                             }
                         }
 
-                        Output("Invalid Git repository. No ref.");
-                        commitId = string.Empty;
-                        return ToReturnCode(Errors.InvalidGitRepository);
+                        if (commitId.Length == 0)
+                        {
+                            Output("Invalid Git repository. No ref or head.", isError: true);
+                            return ToReturnCode(Errors.InvalidGitRepository);
+                        }
                     }
                     catch (Exception e)
                     {
-                        Output(e.Message);
+                        Output(e.Message, isError: true);
                         commitId = string.Empty;
                         return ToReturnCode(Errors.ExceptionReadingGit);
                     }
@@ -235,7 +244,7 @@
                     folder = Path.GetDirectoryName(folder)!;
             }
 
-            Output("File not in a subdirectory of a Git repository.");
+            Output("File not in a subdirectory of a Git repository.", isError: true);
             commitId = string.Empty;
             return ToReturnCode(Errors.NotInGitRepository);
         }
@@ -281,7 +290,7 @@
             }
             catch (Exception e)
             {
-                Output(e.Message);
+                Output(e.Message, isError: true);
                 return ToReturnCode(Errors.ExceptionClearingFile);
             }
         }
@@ -306,12 +315,12 @@
             stringFileInfo[key] = value;
         }
 
-        private void Output(string message)
+        private void Output(string message, bool isError = false)
         {
             if (IsQuiet)
                 return;
 
-            ConsoleDebug.Write(message);
+            ConsoleDebug.Write(message, isError);
         }
 
         private static int ToReturnCode(Errors error)
