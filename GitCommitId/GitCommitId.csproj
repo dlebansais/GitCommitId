@@ -8,14 +8,14 @@
     <Nullable>enable</Nullable>
     <Platforms>x64</Platforms>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
-    <Version>1.1.1</Version>
+    <Version>1.1.2</Version>
     <Authors>David Le Bansais</Authors>
     <Company />
     <Product>GitCommitId</Product>
     <Description>Update an assembly (.exe or .dll) with the Git Commit Id it was compiled from</Description>
     <Copyright>Copyright © David Le Bansais 2019</Copyright>
-    <AssemblyVersion>1.1.1.44</AssemblyVersion>
-    <FileVersion>1.1.1.44</FileVersion>
+    <AssemblyVersion>1.1.2.44</AssemblyVersion>
+    <FileVersion>1.1.2.44</FileVersion>
     <RepositoryUrl>https://github.com/dlebansais/GitCommitId</RepositoryUrl>
     <NeutralLanguage>en-US</NeutralLanguage>
     <RootNamespace>GitCommitId</RootNamespace>

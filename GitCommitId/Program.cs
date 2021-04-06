@@ -227,11 +227,11 @@
                             }
                         }
 
-                        if (commitId.Length == 0)
-                        {
-                            Output("Invalid Git repository. No ref or head.", isError: true);
-                            return ToReturnCode(Errors.InvalidGitRepository);
-                        }
+                        if (commitId.Length > 0)
+                            return ToReturnCode(Errors.Success);
+
+                        Output("Invalid Git repository. No ref or head.", isError: true);
+                        return ToReturnCode(Errors.InvalidGitRepository);
                     }
                     catch (Exception e)
                     {
