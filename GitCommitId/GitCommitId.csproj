@@ -2,20 +2,20 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net48;net5.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1;netcoreapp3.1;net48;net5.0</TargetFrameworks>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
     <Platforms>x64</Platforms>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
-    <Version>1.1.3</Version>
+    <Version>1.1.4</Version>
     <Authors>David Le Bansais</Authors>
     <Company />
     <Product>GitCommitId</Product>
     <Description>Update an assembly (.exe or .dll) with the Git Commit Id it was compiled from</Description>
     <Copyright>Copyright © David Le Bansais 2019</Copyright>
-    <AssemblyVersion>1.1.3.47</AssemblyVersion>
-    <FileVersion>1.1.3.47</FileVersion>
+    <AssemblyVersion>1.1.4.47</AssemblyVersion>
+    <FileVersion>1.1.4.47</FileVersion>
     <RepositoryUrl>https://github.com/dlebansais/GitCommitId</RepositoryUrl>
     <NeutralLanguage>en-US</NeutralLanguage>
     <RootNamespace>GitCommitId</RootNamespace>
