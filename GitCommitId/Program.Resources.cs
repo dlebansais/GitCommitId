@@ -59,7 +59,7 @@
                 }
             }
 
-            if (IsSaved && TryCount > 1)
+            if (IsVerbose && IsSaved && TryCount > 1)
                 Output($"({TryCount} tries required)");
         }
     }

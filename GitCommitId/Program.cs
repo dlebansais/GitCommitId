@@ -156,7 +156,9 @@
                             }
                         }
 
-                        Output("Warning: using localhost repository.");
+                        if (IsVerbose)
+                            Output("Warning: using localhost repository.");
+
                         repositoryAddress = "localhost";
                         return ToReturnCode(Errors.Success);
                     }

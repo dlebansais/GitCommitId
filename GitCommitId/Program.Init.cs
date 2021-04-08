@@ -38,6 +38,9 @@ Update an assembly (.exe or .dll) with the Git Commit Id it was compiled from.
         [Option(Description = "Quiet.", ShortName = "q", LongName = "quiet")]
         private bool IsQuiet { get; set; }
 
+        [Option(Description = "Verbose.", ShortName = "v", LongName = "verbose")]
+        private bool IsVerbose { get; set; }
+
         private static int RunAndSetResult(int ignored)
         {
             return ExecuteResult;
@@ -47,7 +50,9 @@ Update an assembly (.exe or .dll) with the Git Commit Id it was compiled from.
         {
             try
             {
-                ShowCommandLineArguments();
+                if (IsVerbose)
+                    ShowCommandLineArguments();
+
                 ExecuteResult = ExecuteProgram();
             }
             catch (Exception e)
