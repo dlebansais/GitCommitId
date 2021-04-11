@@ -19,6 +19,7 @@
     <RepositoryUrl>https://github.com/dlebansais/GitCommitId</RepositoryUrl>
     <NeutralLanguage>en-US</NeutralLanguage>
     <RootNamespace>GitCommitId</RootNamespace>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup>
