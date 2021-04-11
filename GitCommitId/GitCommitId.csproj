@@ -8,14 +8,14 @@
     <Nullable>enable</Nullable>
     <Platforms>x64</Platforms>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
-    <Version>1.1.6</Version>
+    <Version>1.1.7</Version>
     <Authors>David Le Bansais</Authors>
     <Company />
     <Product>GitCommitId</Product>
     <Description>Update an assembly (.exe or .dll) with the Git Commit Id it was compiled from</Description>
     <Copyright>Copyright © David Le Bansais 2019</Copyright>
-    <AssemblyVersion>1.1.6.49</AssemblyVersion>
-    <FileVersion>1.1.6.49</FileVersion>
+    <AssemblyVersion>1.1.7.49</AssemblyVersion>
+    <FileVersion>1.1.7.49</FileVersion>
     <RepositoryUrl>https://github.com/dlebansais/GitCommitId</RepositoryUrl>
     <NeutralLanguage>en-US</NeutralLanguage>
     <RootNamespace>GitCommitId</RootNamespace>
@@ -43,8 +43,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Vestris.ResourceLib" Version="2.1.0" />
-    <PackageReference Include="Contracts-Debug" Version="1.0.11" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
-    <PackageReference Include="Contracts" Version="1.0.11" Condition="'$(Configuration)|$(Platform)'!='Debug|x64'" />
+    <PackageReference Include="Contracts-Debug" Version="1.0.12" Condition="'$(Configuration)|$(Platform)'!='Release|x64'" />
+    <PackageReference Include="Contracts" Version="1.0.12" Condition="'$(Configuration)|$(Platform)'!='Debug|x64'" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net48'">
@@ -55,8 +55,8 @@
 
   <Target Name="_ResolveCopyLocalNuGetPackagePdbsAndXml" Condition="$(CopyLocalLockFileAssemblies) == true" AfterTargets="ResolveReferences">
     <ItemGroup>
-      <ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)%(Filename).pdb')" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' != ''&#xD;&#xA;                    and Exists('%(RootDir)%(Directory)%(Filename).pdb')" />
-      <ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)%(Filename).xml')" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' != ''&#xD;&#xA;                    and Exists('%(RootDir)%(Directory)%(Filename).xml')" />
+      <ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)%(Filename).pdb')" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' != '' And Exists('%(RootDir)%(Directory)%(Filename).pdb') " />
+      <ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)%(Filename).xml')" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' != '' And Exists('%(RootDir)%(Directory)%(Filename).xml') " />
     </ItemGroup>
   </Target>
 
