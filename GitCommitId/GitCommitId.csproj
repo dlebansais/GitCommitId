@@ -14,8 +14,8 @@
     <Product>GitCommitId</Product>
     <Description>Update an assembly (.exe or .dll) with the Git Commit Id it was compiled from</Description>
     <Copyright>Copyright © David Le Bansais 2019</Copyright>
-    <AssemblyVersion>1.1.7.50</AssemblyVersion>
-    <FileVersion>1.1.7.50</FileVersion>
+    <AssemblyVersion>1.1.7.51</AssemblyVersion>
+    <FileVersion>1.1.7.51</FileVersion>
     <RepositoryUrl>https://github.com/dlebansais/GitCommitId</RepositoryUrl>
     <NeutralLanguage>en-US</NeutralLanguage>
     <RootNamespace>GitCommitId</RootNamespace>

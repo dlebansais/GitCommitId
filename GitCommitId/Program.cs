@@ -142,7 +142,7 @@
                         using FileStream GitPathStream = new FileStream(GitPath, FileMode.Open, FileAccess.Read, FileShare.Read);
                         using StreamReader GitPathReader = new StreamReader(GitPathStream, Encoding.ASCII);
 
-                        for (; ;)
+                        while (true)
                         {
                             string? Line = GitPathReader.ReadLine();
                             if (Line == null)
