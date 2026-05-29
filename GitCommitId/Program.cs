@@ -33,12 +33,12 @@ internal partial class Program
     {
         try
         {
-            Program.LoadStringFileInfo(fileName, out VersionResource VersionResource, out StringFileInfo StringFileInfo);
+            LoadStringFileInfo(fileName, out VersionResource VersionResource, out StringFileInfo StringFileInfo);
 
             try
             {
-                string RepositoryAddress = Program.ReadResourceString(StringFileInfo, RepositoryAddressString);
-                string CommitId = Program.ReadResourceString(StringFileInfo, CommitIdString);
+                string RepositoryAddress = ReadResourceString(StringFileInfo, RepositoryAddressString);
+                string CommitId = ReadResourceString(StringFileInfo, CommitIdString);
 
                 Output($"Current Repo: {RepositoryAddress}");
                 Output($"Current Id: {CommitId}");
@@ -66,14 +66,14 @@ internal partial class Program
 
         try
         {
-            Program.LoadStringFileInfo(fileName, out VersionResource VersionResource, out StringFileInfo StringFileInfo);
+            LoadStringFileInfo(fileName, out VersionResource VersionResource, out StringFileInfo StringFileInfo);
 
             string FileRepositoryAddress;
             string FileCommitId;
             try
             {
-                FileRepositoryAddress = Program.ReadResourceString(StringFileInfo, RepositoryAddressString);
-                FileCommitId = Program.ReadResourceString(StringFileInfo, CommitIdString);
+                FileRepositoryAddress = ReadResourceString(StringFileInfo, RepositoryAddressString);
+                FileCommitId = ReadResourceString(StringFileInfo, CommitIdString);
             }
             catch
             {
@@ -84,7 +84,7 @@ internal partial class Program
             bool IsRepositoryAddressUpdated;
             if (forceReplace || FileRepositoryAddress.Length == 0 || FileRepositoryAddress != RepositoryAddress)
             {
-                Program.WriteResourceString(StringFileInfo, RepositoryAddressString, RepositoryAddress);
+                WriteResourceString(StringFileInfo, RepositoryAddressString, RepositoryAddress);
                 Output($"Repo updated to: {RepositoryAddress}");
                 IsRepositoryAddressUpdated = true;
             }
@@ -94,7 +94,7 @@ internal partial class Program
             bool IsCommitIdUpdated;
             if (forceReplace || FileCommitId.Length == 0 || FileCommitId != CommitId)
             {
-                Program.WriteResourceString(StringFileInfo, CommitIdString, CommitId);
+                WriteResourceString(StringFileInfo, CommitIdString, CommitId);
                 Output($"Id updated to: {CommitId}");
 
                 IsCommitIdUpdated = true;
@@ -116,7 +116,17 @@ internal partial class Program
 
     private int GetCommitInfo(string fileName, out string repositoryAddress, out string commitId)
     {
-        string Folder = UseWorkingDirectory ? Environment.CurrentDirectory : Path.GetDirectoryName(fileName)!;
+        string? Folder = UseWorkingDirectory
+            ? Environment.CurrentDirectory
+            : Path.GetDirectoryName(fileName);
+
+        if (Folder == null)
+        {
+            Output($"Unable to find directory for file.", isError: true);
+            repositoryAddress = string.Empty;
+            commitId = string.Empty;
+            return ToReturnCode(Errors.InvalidSourceFile);
+        }
 
         int Result;
 
@@ -129,7 +139,7 @@ internal partial class Program
         return (Result = GetCommitId(Folder, out commitId)) < 0 ? Result : ToReturnCode(Errors.Success);
     }
 
-    private int GetRepositoryAddress(string folder, out string repositoryAddress)
+    private int GetRepositoryAddress(string? folder, out string repositoryAddress)
     {
         while (folder != null)
         {
@@ -169,7 +179,7 @@ internal partial class Program
                 }
             }
             else
-                folder = Path.GetDirectoryName(folder)!;
+                folder = Path.GetDirectoryName(folder);
         }
 
         Output("File not in a subdirectory of a Git repository.", isError: true);
@@ -177,7 +187,7 @@ internal partial class Program
         return ToReturnCode(Errors.NotInGitRepository);
     }
 
-    private int GetCommitId(string folder, out string commitId)
+    private int GetCommitId(string? folder, out string commitId)
     {
         while (folder != null)
         {
@@ -209,7 +219,7 @@ internal partial class Program
                             using FileStream RefPathStream = new(RefPath, FileMode.Open, FileAccess.Read, FileShare.Read);
                             using StreamReader RefPathReader = new(RefPathStream, Encoding.ASCII);
 
-                            commitId = RefPathReader.ReadLine()!;
+                            commitId = RefPathReader.ReadLine() ?? string.Empty;
                             return ToReturnCode(Errors.Success);
                         }
                     }
@@ -228,7 +238,7 @@ internal partial class Program
                 }
             }
             else
-                folder = Path.GetDirectoryName(folder)!;
+                folder = Path.GetDirectoryName(folder);
         }
 
         Output("File not in a subdirectory of a Git repository.", isError: true);
@@ -240,7 +250,7 @@ internal partial class Program
     {
         try
         {
-            Program.LoadStringFileInfo(fileName, out VersionResource VersionResource, out StringFileInfo StringFileInfo);
+            LoadStringFileInfo(fileName, out VersionResource VersionResource, out StringFileInfo StringFileInfo);
 
             bool IsRepositoryAddressRemoved = false;
             foreach (KeyValuePair<string, StringTable> StringEntry in StringFileInfo.Strings)
