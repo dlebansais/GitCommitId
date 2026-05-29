@@ -1,29 +1,13 @@
-# UpdateCheck
+# GitCommitId
 
-Check any GitHub project for update.
+Update an assembly (.exe or .dll) with the Git Commit Id it was compiled from.
 
 # Usage
 
-Create a `Checker` object with the name of the owner and project you want to check.
-
-````csharp
-Checker checker = new Checker("dlebansais", "UpdateCheck");
-````
-
-Every time you want to check for a new update, subscribe to the `UpdateStatusChanged` event, then call `CheckUpdate`.
-
-````csharp
-checker.UpdateStatusChanged += OnUpdateStatusChanged;
-checker.CheckUpdate();
-````
-
-When the operation is completed, the result is in `IsUpdateAvailable`.
-````csharp
-void OnUpdateStatusChanged(object sender, EventArgs e)
-{
-	Checker checker = (Checker)sender; 
-	checker.UpdateStatusChanged -= OnUpdateStatusChanged;
-
-	// Read checker.IsUpdateAvailable
-}
-````
+    GitCommitId.exe <.exe or .dll> [-u | -r | -c] [-q]
+    No option: read the Commit Id in the file.
+    -u: update the file Commit Id with the current Id, except if no change.
+    -r: replace the file Commit Id with the current Id even if no change, and insert it if necessary.
+    -c: clear the Commit Id in the file.
+    -w: search Git in the working directory.
+    -q: quiet.
