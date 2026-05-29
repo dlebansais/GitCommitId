@@ -4,7 +4,7 @@ Update an assembly (.exe or .dll) with the Git Commit Id it was compiled from.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/6viyxf5c3491uge8?svg=true)](https://ci.appveyor.com/project/dlebansais/gitcommitid)
 [![CodeFactor](https://www.codefactor.io/repository/github/dlebansais/gitcommitid/badge)](https://www.codefactor.io/repository/github/dlebansais/gitcommitid)
-[![NuGet](https://img.shields.io/nuget/v/GitCommitId.svg)](https://www.nuget.org/packages/GitCommitId)
+[![NuGet](https://img.shields.io/nuget/v/dlebansais.GitCommitId.svg)](https://www.nuget.org/packages/dlebansais.GitCommitId)
 
 ## Purpose
 
